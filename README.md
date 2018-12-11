@@ -2,9 +2,18 @@
 
 Wrapper script for [7zip-bin](https://www.npmjs.com/package/7zip-bin)
 
-Parsing output from 7za, create progress etc.
+Parsing output from 7za, create progress event.
 
-## Define:
+Params used by this package: (not able to use your self)
+* -bs??
+* -y 
+
+Progress created from 7za output line:
+```regexp
+/^(\d+[%M])(?: - )?(.*)$/
+```
+
+## Data Define:
 ```typescript
 interface IStatusReport {
 	progress: number; // 0 ~ 100
@@ -38,7 +47,7 @@ handler = sevenZip('x', 'xxx.7z');
 // run raw command, with spawn Option
 handler = sevenZip({ cwd: "/tmp" }, 'x', 'xxx.7z');
 
-// auto add -y to 7z, and detach input
+// prevent add -y to 7za, and inherit stdin
 handler = sevenZipCli('x', 'xxx.7z'); 
 
 handler = extract('xxx.7z', 'some/where/else');

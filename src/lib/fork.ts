@@ -1,6 +1,5 @@
 import { path7za } from '7zip-bin';
 import { ChildProcess, spawn, SpawnOptions } from 'child_process';
-import { PassThrough } from 'stream';
 
 export interface ProgramError extends Error {
 	__cwd: string;
@@ -25,12 +24,16 @@ function buildArgs(args: string[]) {
 export type ExtraSpawnOptions = Pick<SpawnOptions, 'cwd' | 'env' | 'uid' | 'gid' | 'shell'>
 
 export interface IToRun {
-	stdout: NodeJS.ReadableStream;
-	stderr: NodeJS.ReadableStream;
 	commandline: string[]
 	cwd: string;
 
 	execute(): ChildProcess;
+}
+
+const quited = Symbol('quited');
+
+function hasQuit(cp: ChildProcess): boolean {
+	return (cp as any)[quited];
 }
 
 /** @internal */
@@ -43,12 +46,8 @@ export function spawn7z(args: string[], cli: boolean, extra: ExtraSpawnOptions =
 
 	args = buildArgs(args);
 
-	const stdout = new PassThrough();
-	const stderr = new PassThrough();
-
 	const commandline = [path7za, ...args];
 	return {
-		stdout, stderr,
 		commandline,
 		cwd,
 		execute() {
@@ -63,8 +62,12 @@ export function spawn7z(args: string[], cli: boolean, extra: ExtraSpawnOptions =
 					windowsHide: true,
 				},
 			);
-			cp.stdout.pipe(stdout);
-			cp.stdout.pipe(stderr);
+
+			cp.once('exit', () => {
+				Object.assign(cp, {
+					[quited]: true,
+				});
+			});
 
 			return cp;
 		},
@@ -110,16 +113,17 @@ ${indentArgs(cmd.slice(1))}
 }
 
 export function processQuitPromise(cp: ChildProcess): Promise<void> {
+	if (hasQuit(cp)) {
+		return Promise.resolve();
+	}
 	return new Promise((resolve, reject) => {
 		const to = setTimeout(() => {
 			cp.kill('sigkill');
 		}, 5000);
-		cp.on('exit', (_, signal: string) => {
+		cp.once('exit', (_, signal: string) => {
 			clearTimeout(to);
 			resolve();
 		});
-		if (!cp.kill('sigint')) {
-			return resolve(); // not able to send
-		}
+		cp.kill('sigint');
 	});
 }

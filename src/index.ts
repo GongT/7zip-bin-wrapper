@@ -13,26 +13,27 @@ export class I7zHandler extends EventEmitter {
 	) {
 		super();
 
-		handleOutput(toRun.stdout).on('data', (data: string) => {
-			this.emit('output', data);
-		});
-		handleProgress(toRun.stderr).on('data', (status: IStatusReport) => {
-			this.emit('progress', status);
-		});
-
 		this._timer = setImmediate(() => {
-			console.log('---------------');
 			delete this._timer;
 			this._start();
 		});
 	}
 
 	private _start() {
+		console.error('---------------');
 		if (this._promise) {
 			return;
 		}
 		this.hold();
 		this.cp = this.toRun.execute();
+
+		handleOutput(this.cp.stdout).on('data', (data: string) => {
+			this.emit('output', data);
+		});
+		handleProgress(this.cp.stderr).on('data', (status: IStatusReport) => {
+			this.emit('progress', status);
+		});
+
 		this._promise = processPromise(this.cp, this.commandline, this.cwd);
 	}
 
@@ -100,6 +101,6 @@ const defaultZipArgs = [
 	'-ssc', // case-sensitive mode
 ];
 
-export function compress(sourceDir: string, zipFile: string) {
-	return _7Zip(false, ['a', ...defaultZipArgs, zipFile, sourceDir]);
+export function compress(zipFile: string, sourceDir: string, ...extraSource: string[]) {
+	return _7Zip(false, ['a', ...defaultZipArgs, zipFile, sourceDir, ...extraSource]);
 }

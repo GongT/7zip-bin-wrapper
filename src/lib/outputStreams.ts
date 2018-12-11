@@ -34,7 +34,7 @@ class FilterStream extends Transform {
 	}
 }
 
-const matchExp = /^(\d+%)(?: - )?(.*)$/;
+const matchExp = /^(\d+[%M])(?: - )?(.*)$/;
 
 export interface IStatusReport {
 	progress: number;
@@ -73,4 +73,16 @@ export function handleProgress(stream: NodeJS.ReadableStream) {
 		.pipe(split2())
 		.pipe(new FilterStream())
 		.pipe(new ProgressStream());
+}
+
+export class LoggerStream extends Transform {
+	constructor(private pp: string) {
+		super({ objectMode: true });
+	}
+
+	_transform(chunk: string, encoding: string, callback: Function): void {
+		console.error(`${this.pp}: ${chunk}`);
+		this.push(chunk, encoding);
+		callback();
+	}
 }

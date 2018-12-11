@@ -1,4 +1,4 @@
-import { IToRun, processPromise, processQuitPromise, spawn7z } from './lib/fork';
+import { ExtraSpawnOptions, IToRun, processPromise, processQuitPromise, spawn7z } from './lib/fork';
 import { handleOutput, handleProgress, IStatusReport } from './lib/outputStreams';
 import { EventEmitter } from 'events';
 import { ChildProcess } from 'child_process';
@@ -77,16 +77,28 @@ export class I7zHandler extends EventEmitter {
 	}
 }
 
-function _7Zip(cli: boolean, args: string[]): I7zHandler {
-	return new I7zHandler(spawn7z(args, false));
+function _7Zip(cli: boolean, args: string[], ex?: ExtraSpawnOptions): I7zHandler {
+	return new I7zHandler(spawn7z(args, false, ex));
 }
 
-export function sevenZip(...args: string[]) {
-	return _7Zip(false, args);
+export function sevenZip(ex: ExtraSpawnOptions, ...args: string[]): I7zHandler;
+export function sevenZip(...args: string[]): I7zHandler;
+export function sevenZip(...args: any[]) {
+	let ex = undefined;
+	if (typeof args[0] !== 'string') {
+		ex = args.shift();
+	}
+	return _7Zip(false, args, ex);
 }
 
-export function sevenZipCli(...args: string[]) {
-	return _7Zip(true, args);
+export function sevenZipCli(ex: ExtraSpawnOptions, ...args: string[]): I7zHandler;
+export function sevenZipCli(...args: string[]): I7zHandler;
+export function sevenZipCli(...args: any[]) {
+	let ex = undefined;
+	if (typeof args[0] !== 'string') {
+		ex = args.shift();
+	}
+	return _7Zip(true, args, ex);
 }
 
 export function extract(zipFile: string, targetDir: string) {

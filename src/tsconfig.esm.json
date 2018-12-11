@@ -2,8 +2,9 @@
 	"extends": "../node_modules/@gongt/single-dog/package/tsconfig.json",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"outDir": "../dist",
-		"declaration": true,
+		"outDir": "../dist/esm",
+		"declaration": false,
+		"module": "esnext",
 		"types": [
 			"node"
 		]

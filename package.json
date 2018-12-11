@@ -1,7 +1,7 @@
 {
-	"name": "7zip-bin-util",
+	"name": "7zip-bin-wrapper",
 	"version": "1.0.0",
-	"repository": "git@github.com:GongT/7zip-bin-util.git",
+	"repository": "git@github.com:GongT/7zip-bin-wrapper.git",
 	"author": "GongT <gongteng524702837@gmail.com>",
 	"license": "MIT",
 	"main": "boot.js",
@@ -9,7 +9,8 @@
 	"typings": "dist/index.d.ts",
 	"scripts": {
 		"watch": "tsc -p src -w",
-		"build": "tsc -p src"
+		"build": "tsc -p src",
+		"prepublish": "tsc -p src && tsc -p src/tsconfig.esm.json"
 	},
 	"dependencies": {
 		"iconv-lite": "^0.4.24",

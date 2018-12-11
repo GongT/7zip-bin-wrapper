@@ -1,0 +1,7 @@
+src
+test
+node_modules
+
+.editorconfig
+.gitignore
+.idea

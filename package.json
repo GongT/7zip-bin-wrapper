@@ -10,7 +10,7 @@
 	"scripts": {
 		"watch": "tsc -p src -w",
 		"build": "tsc -p src",
-		"prepublish": "tsc -p src && tsc -p src/tsconfig.esm.json"
+		"prepublishOnly": "rimraf dist && tsc -p src && tsc -p src/tsconfig.esm.json"
 	},
 	"dependencies": {
 		"iconv-lite": "^0.4.24",
@@ -18,11 +18,12 @@
 		"split2": "^3.0.0"
 	},
 	"devDependencies": {
+		"7zip-bin": "^4.1.0",
 		"@gongt/single-dog": "^1.1.11111111",
 		"@types/node": "latest",
 		"@types/split2": "^2.1.6",
-		"typescript": "latest",
-		"7zip-bin": "^4.1.0"
+		"rimraf": "^2.6.2",
+		"typescript": "latest"
 	},
 	"peerDependencies": {
 		"7zip-bin": "^4.1.0"

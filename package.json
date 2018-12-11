@@ -1,0 +1,29 @@
+{
+	"name": "7zip-bin-util",
+	"version": "1.0.0",
+	"repository": "git@github.com:GongT/7zip-bin-util.git",
+	"author": "GongT <gongteng524702837@gmail.com>",
+	"license": "MIT",
+	"main": "boot.js",
+	"module": "dist/esm/index.js",
+	"typings": "dist/index.d.ts",
+	"scripts": {
+		"watch": "tsc -p src -w",
+		"build": "tsc -p src"
+	},
+	"dependencies": {
+		"iconv-lite": "^0.4.24",
+		"source-map-support": "*",
+		"split2": "^3.0.0"
+	},
+	"devDependencies": {
+		"@gongt/single-dog": "^1.1.11111111",
+		"@types/node": "latest",
+		"@types/split2": "^2.1.6",
+		"typescript": "latest",
+		"7zip-bin": "^4.1.0"
+	},
+	"peerDependencies": {
+		"7zip-bin": "^4.1.0"
+	}
+}

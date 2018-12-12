@@ -1,3 +1,8 @@
+### WIP
+> This package is working in progress.  
+  Do not use.   
+  Reason: not test on mac and windows
+
 # 7zip-bin-wrapper
 
 Wrapper script for [7zip-bin](https://www.npmjs.com/package/7zip-bin)

@@ -21,12 +21,11 @@ function buildArgs(args: string[]) {
 	}));
 }
 
-export type ExtraSpawnOptions = Pick<SpawnOptions, 'cwd' | 'env' | 'uid' | 'gid' | 'shell'>
+export type ExtraSpawnOptions = Pick<SpawnOptions, 'cwd'|'env'|'uid'|'gid'|'shell'>
 
 export interface IToRun {
 	commandline: string[]
 	cwd: string;
-
 	execute(): ChildProcess;
 }
 
@@ -39,13 +38,13 @@ function hasQuit(cp: ChildProcess): boolean {
 /** @internal */
 export function spawn7z(args: string[], cli: boolean, extra: ExtraSpawnOptions = {}): IToRun {
 	const cwd = extra.cwd || process.cwd();
-
+	
 	if (!cli && !args.includes('-y')) {
 		args.unshift('-y');
 	}
-
+	
 	args = buildArgs(args);
-
+	
 	const commandline = [path7za, ...args];
 	return {
 		commandline,
@@ -56,19 +55,19 @@ export function spawn7z(args: string[], cli: boolean, extra: ExtraSpawnOptions =
 				args,
 				{
 					...extra,
-					stdio      : [cli? 'inherit' : 'ignore', 'pipe', 'pipe'],
+					stdio: [cli? 'inherit' : 'ignore', 'pipe', 'pipe'],
 					cwd,
-					detached   : false,
+					detached: false,
 					windowsHide: true,
 				},
 			);
-
+			
 			cp.once('exit', () => {
 				Object.assign(cp, {
 					[quited]: true,
 				});
 			});
-
+			
 			return cp;
 		},
 	};
@@ -108,7 +107,7 @@ ${indentArgs(cmd.slice(1))}
 		status, signal,
 		__programError: true,
 		__program,
-		__cwd         : cmd[2],
+		__cwd: cmd[2],
 	});
 }
 

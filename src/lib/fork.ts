@@ -1,5 +1,7 @@
-import { path7za } from '7zip-bin';
+import { path7za as originalPath7za } from '7zip-bin';
 import { ChildProcess, spawn, SpawnOptions } from 'child_process';
+
+const path7za = originalPath7za.replace(/\.asar\//, '.asar.unpacked/');
 
 export interface ProgramError extends Error {
 	__cwd: string;
@@ -21,7 +23,7 @@ function buildArgs(args: string[]) {
 	}));
 }
 
-export type ExtraSpawnOptions = Pick<SpawnOptions, 'cwd'|'env'|'uid'|'gid'|'shell'>
+export type ExtraSpawnOptions = Pick<SpawnOptions, 'cwd' | 'env' | 'uid' | 'gid' | 'shell'>
 
 export interface IToRun {
 	commandline: string[]
@@ -38,13 +40,13 @@ function hasQuit(cp: ChildProcess): boolean {
 /** @internal */
 export function spawn7z(args: string[], cli: boolean, extra: ExtraSpawnOptions = {}): IToRun {
 	const cwd = extra.cwd || process.cwd();
-	
+
 	if (!cli && !args.includes('-y')) {
 		args.unshift('-y');
 	}
-	
+
 	args = buildArgs(args);
-	
+
 	const commandline = [path7za, ...args];
 	return {
 		commandline,
@@ -55,19 +57,19 @@ export function spawn7z(args: string[], cli: boolean, extra: ExtraSpawnOptions =
 				args,
 				{
 					...extra,
-					stdio: [cli? 'inherit' : 'ignore', 'pipe', 'pipe'],
+					stdio: [cli ? 'inherit' : 'ignore', 'pipe', 'pipe'],
 					cwd,
 					detached: false,
 					windowsHide: true,
 				},
 			);
-			
+
 			cp.once('exit', () => {
 				Object.assign(cp, {
 					[quited]: true,
 				});
 			});
-			
+
 			return cp;
 		},
 	};
@@ -102,7 +104,7 @@ export function StatusCodeError(status: number, signal: string, cwd: string, cmd
 ${indentArgs(cmd.slice(1))}
 `;
 	return Object.assign(new Error(
-		signal? `Program exit by signal "${signal}"` : `Program exit with code "${status}"`,
+		signal ? `Program exit by signal "${signal}"` : `Program exit with code "${status}"`,
 	), {
 		status, signal,
 		__programError: true,

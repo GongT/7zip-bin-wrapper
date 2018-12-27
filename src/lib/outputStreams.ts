@@ -6,7 +6,7 @@ import * as split2 from 'split2';
 const isWin = platform() === 'win32';
 
 function transformOutputEncode(source: NodeJS.ReadableStream): NodeJS.ReadableStream {
-	return isWin? source.pipe(decodeStream('936')) : source;
+	return isWin ? source.pipe(decodeStream('936')) : source;
 }
 
 class BackspaceNewlineStream extends Transform {
@@ -37,12 +37,15 @@ class FilterStream extends Transform {
 const matchExp = /^(\d+[%M])(?: - )?(.*)$/;
 
 export interface IStatusReport {
+	messageOnly?: boolean;
 	progress: number;
 	message: string;
 }
 
 class ProgressStream extends Transform {
-	constructor() {
+	constructor(
+		private readonly message: boolean,
+	) {
 		super({ objectMode: true });
 	}
 
@@ -53,9 +56,14 @@ class ProgressStream extends Transform {
 			if (!isNaN(percent)) {
 				this.push({
 					progress: percent,
-					message : match[2] || '',
+					message: match[2] || '',
 				} as IStatusReport);
 			}
+		} else if (this.message) {
+			this.push({
+				messageOnly: true,
+				message: chunk,
+			} as IStatusReport);
 		}
 		callback();
 	}
@@ -67,12 +75,12 @@ export function handleOutput(stream: NodeJS.ReadableStream) {
 		.pipe(new FilterStream());
 }
 
-export function handleProgress(stream: NodeJS.ReadableStream) {
+export function handleProgress(stream: NodeJS.ReadableStream, message: boolean) {
 	return transformOutputEncode(stream)
 		.pipe(new BackspaceNewlineStream())
 		.pipe(split2())
 		.pipe(new FilterStream())
-		.pipe(new ProgressStream());
+		.pipe(new ProgressStream(message));
 }
 
 export class LoggerStream extends Transform {

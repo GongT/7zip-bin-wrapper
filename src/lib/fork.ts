@@ -1,7 +1,11 @@
 import { path7za as originalPath7za } from '7zip-bin';
 import { ChildProcess, spawn, SpawnOptions } from 'child_process';
+import { basename, dirname } from 'path';
+import { handleOutput, handleProgress, IStatusReport } from './outputStreams';
 
-const path7za = originalPath7za.replace(/\.asar\//, '.asar.unpacked/');
+const path7za = originalPath7za.replace(/\.asar([\/\\])/, (m0, sp) => {
+	return '.asar.unpacked' + sp;
+});
 
 export interface ProgramError extends Error {
 	__cwd: string;
@@ -24,17 +28,55 @@ function buildArgs(args: string[]) {
 }
 
 export type ExtraSpawnOptions = Pick<SpawnOptions, 'cwd' | 'env' | 'uid' | 'gid' | 'shell'>
+export type MessageHandler = (data: string) => void;
+export type ProgressHandler = (status: IStatusReport) => void;
 
 export interface IToRun {
-	commandline: string[]
+	commandline: string[];
 	cwd: string;
-	execute(): ChildProcess;
+	execute(handleData: MessageHandler, handleStatus: ProgressHandler): ChildProcess;
 }
 
 const quited = Symbol('quited');
 
 function hasQuit(cp: ChildProcess): boolean {
 	return (cp as any)[quited];
+}
+
+/** @internal */
+export function spawnSfx(sfxFile: string, targetDir: string, extra: ExtraSpawnOptions = {}): IToRun {
+	const args = ['x', `-o${targetDir}`, '-y'];
+	const cwd = dirname(sfxFile);
+	const file = basename(sfxFile);
+
+	return {
+		commandline: [file, ...args],
+		cwd,
+		execute(handleData: MessageHandler, handleStatus: ProgressHandler) {
+			const cp = spawn(
+				file,
+				args,
+				{
+					...extra,
+					cwd,
+					stdio: ['ignore', 'pipe', 'pipe'],
+					detached: false,
+					windowsHide: true,
+				},
+			);
+
+			handleQuit(cp);
+			handleProgress(cp.stdout, true).on('data', (status: IStatusReport) => {
+				if (status.messageOnly) {
+					handleData(status.message);
+				} else {
+					handleStatus(status);
+				}
+			});
+
+			return cp;
+		},
+	};
 }
 
 /** @internal */
@@ -51,7 +93,7 @@ export function spawn7z(args: string[], cli: boolean, extra: ExtraSpawnOptions =
 	return {
 		commandline,
 		cwd,
-		execute() {
+		execute(handleData: MessageHandler, handleStatus: ProgressHandler) {
 			const cp = spawn(
 				path7za,
 				args,
@@ -63,16 +105,21 @@ export function spawn7z(args: string[], cli: boolean, extra: ExtraSpawnOptions =
 					windowsHide: true,
 				},
 			);
-
-			cp.once('exit', () => {
-				Object.assign(cp, {
-					[quited]: true,
-				});
-			});
+			handleQuit(cp);
+			handleOutput(cp.stdout).on('data', handleData);
+			handleProgress(cp.stderr, false).on('data', handleStatus);
 
 			return cp;
 		},
 	};
+}
+
+function handleQuit(cp: ChildProcess) {
+	cp.once('exit', () => {
+		Object.assign(cp, {
+			[quited]: true,
+		});
+	});
 }
 
 export function processPromise(cp: ChildProcess, cmd: string[], cwd: string) {

@@ -3,9 +3,12 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"outDir": "../dist",
-		"declaration": true,
+		"declaration": false,
 		"types": [
 			"node"
 		]
-	}
+	},
+	"exclude": [
+		"_export_all_in_once_index.ts"
+	]
 }

@@ -4,11 +4,16 @@ import { platform } from 'os';
 import * as split2 from 'split2';
 
 const isWin = platform() === 'win32';
-
+/**aaa*/
 function transformOutputEncode(source: NodeJS.ReadableStream): NodeJS.ReadableStream {
 	return isWin ? source.pipe(decodeStream('936')) : source;
 }
 
+/**
+ * aaaaa
+ * @xxx
+ * bbb
+ **/
 class BackspaceNewlineStream extends Transform {
 	_transform(chunk: Buffer, encoding: string, callback: Function): void {
 		const str = chunk.toString('utf8').replace(/[\x08\x0d]+/g, '\n').replace(/^ +| +$/g, '');
@@ -36,6 +41,7 @@ class FilterStream extends Transform {
 
 const matchExp = /^(\d+[%M])(?: - )?(.*)$/;
 
+/** @extern */
 export interface IStatusReport {
 	messageOnly?: boolean;
 	progress: number;

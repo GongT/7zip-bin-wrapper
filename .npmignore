@@ -7,3 +7,7 @@ node_modules
 .idea
 
 *.tgz
+
+### @gongt/export-all-in-one
+.export-all-in-one
+

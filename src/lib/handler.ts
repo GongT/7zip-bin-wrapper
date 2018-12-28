@@ -3,11 +3,13 @@ import { EventEmitter } from 'events';
 import { IToRun, processPromise, processQuitPromise } from './fork';
 import { IStatusReport } from './outputStreams';
 
+/** @extern */
 export class I7zHandler extends EventEmitter {
 	private _promise: Promise<void>;
 	private _timer: NodeJS.Immediate;
 	private cp: ChildProcess;
 
+	/** @internal */
 	constructor(
 		private readonly toRun: IToRun,
 	) {

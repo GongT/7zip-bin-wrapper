@@ -1,16 +1,17 @@
 {
 	"name": "7zip-bin-wrapper",
-	"version": "1.0.5",
-	"repository": "git@github.com:GongT/7zip-bin-wrapper.git",
+	"version": "1.0.6",
+	"repository": "https://github.com/GongT/7zip-bin-wrapper",
 	"author": "GongT <gongteng524702837@gmail.com>",
 	"license": "MIT",
 	"main": "boot.js",
 	"module": "dist/esm/index.js",
-	"typings": "dist/index.d.ts",
+	"typings": "dist/_export_all_in_once_index.d.ts",
 	"scripts": {
-		"watch": "tsc -p src -w",
-		"build": "tsc -p src",
-		"prepublishOnly": "rimraf dist && tsc -p src && tsc -p src/tsconfig.esm.json"
+		"watch": "tsc -p src -w -d",
+		"build": "tsc -p src && yarn build:exports",
+		"prepublishOnly": "rimraf dist && tsc -p src && yarn build:exports",
+		"build:exports": "export-all-in-one \"src/tsconfig.json\" && export-all-in-one -c \".export-all-in-one/tsconfig.json\""
 	},
 	"dependencies": {
 		"iconv-lite": "^0.4.24",
@@ -19,6 +20,7 @@
 	},
 	"devDependencies": {
 		"7zip-bin": "^4.1.0",
+		"@gongt/export-all-in-one": "^2.0.0",
 		"@gongt/single-dog": "^1.1.11111111",
 		"@types/node": "latest",
 		"@types/split2": "^2.1.6",

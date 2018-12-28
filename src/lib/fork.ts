@@ -7,6 +7,7 @@ const path7za = originalPath7za.replace(/\.asar([\/\\])/, (m0, sp) => {
 	return '.asar.unpacked' + sp;
 });
 
+/** @extern */
 export interface ProgramError extends Error {
 	__cwd: string;
 	__program: string;
@@ -27,6 +28,7 @@ function buildArgs(args: string[]) {
 	}));
 }
 
+/** @extern */
 export type ExtraSpawnOptions = Pick<SpawnOptions, 'cwd' | 'env' | 'uid' | 'gid' | 'shell'>
 export type MessageHandler = (data: string) => void;
 export type ProgressHandler = (status: IStatusReport) => void;
@@ -43,7 +45,6 @@ function hasQuit(cp: ChildProcess): boolean {
 	return (cp as any)[quited];
 }
 
-/** @internal */
 export function spawnSfx(sfxFile: string, targetDir: string, extra: ExtraSpawnOptions = {}): IToRun {
 	const args = ['x', `-o${targetDir}`, '-y'];
 	const cwd = dirname(sfxFile);

@@ -1,6 +1,6 @@
 {
 	"name": "7zip-bin-wrapper",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"repository": "https://github.com/GongT/7zip-bin-wrapper",
 	"author": "GongT <gongteng524702837@gmail.com>",
 	"license": "MIT",
@@ -8,7 +8,8 @@
 	"module": "dist/esm/index.js",
 	"typings": "dist/_export_all_in_once_index.d.ts",
 	"bin": {
-		"7za": "./7za.js"
+		"7za": "./7za.js",
+		"7z": "./7za.js"
 	},
 	"scripts": {
 		"watch": "tsc -p src -w -d",

@@ -7,6 +7,9 @@
 	"main": "boot.js",
 	"module": "dist/esm/index.js",
 	"typings": "dist/_export_all_in_once_index.d.ts",
+	"bin": {
+		"7za": "./7za.js"
+	},
 	"scripts": {
 		"watch": "tsc -p src -w -d",
 		"build": "tsc -p src && yarn build:exports",

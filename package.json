@@ -1,6 +1,6 @@
 {
 	"name": "7zip-bin-wrapper",
-	"version": "1.0.6",
+	"version": "1.0.8",
 	"repository": "https://github.com/GongT/7zip-bin-wrapper",
 	"author": "GongT <gongteng524702837@gmail.com>",
 	"license": "MIT",

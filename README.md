@@ -1,8 +1,3 @@
-### WIP
-> This package is working in progress.  
-  Do not use.   
-  Reason: not test on mac and windows
-
 # 7zip-bin-wrapper
 
 Wrapper script for [7zip-bin](https://www.npmjs.com/package/7zip-bin)
@@ -28,12 +23,12 @@ interface IStatusReport {
 interface TheHandler {
 	on(event: 'progress', cb: (progress: IStatusReport) => void): this;
 	on(event: 'output', cb: (data: string) => void): this;
-	/** by default, 7z will run, but you can use hold() to prevent it */
+	/** by default, 7z will run at nextTick, but you can use hold() to prevent it */
 	hold(): void;
 	/** terminate 7z process */
 	cancel(): Promise<void>;
 	/** command line to run */
-	readonly commandline: string[];
+	readonly commandline: ReadonlyArray<string>;
 	/** 7z's cwd */
 	readonly cwd: string;
 	/** wait process complete */
